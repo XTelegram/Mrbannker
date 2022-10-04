@@ -38,10 +38,6 @@ BOT_NAME = bot_info.first_name
 BOT_ID = bot_info.id
 
 # USE YOUR ROTATING PROXY API IN DICT FORMAT http://user:pass@providerhost:port
-proxies = {
-           'http': 'http://qnuomzzl-rotate:4i44gnayqk7c@p.webshare.io:80/',
-           'https': 'http://qnuomzzl-rotate:4i44gnayqk7c@p.webshare.io:80/'
-}
 
 session = requests.Session()
 
@@ -72,7 +68,7 @@ async def helpstr(message: types.Message):
     MSG = f'''
 Hello {FIRST}, Im {BOT_NAME}
 U can find my Boss  <a href="tg://user?id={OWNER}">HERE</a>
-Cmds /chk /info /bin'''
+Cmds /info /gen'''
     await message.answer(MSG, reply_markup=keyboard_markup,
                         disable_web_page_preview=True)
 
@@ -100,33 +96,24 @@ async def info(message: types.Message):
 ╘═════════''')
 
 
-@dp.message_handler(commands=['bin'], commands_prefix=PREFIX)
-async def binio(message: types.Message):
-    await message.answer_chat_action('typing')
-    ID = message.from_user.id
-    FIRST = message.from_user.first_name
-    BIN = message.text[len('/bin '):]
-    if len(BIN) < 6:
-        return await message.reply(
-                   'Send bin not ass'
-        )
-    r = requests.get(
-               f'http://binchk-api.vercel.app/bin={BIN}'
-    ).json()
-    INFO = f'''
-BIN⇢ <code>{BIN}</code>
-Brand⇢ <u>{r["brand"]}</u>
-Type⇢ <u>{r["type"]}</u>
-Level⇢ <u>{r["level"]}</u>
-Bank⇢ <u>{r["bank"]}</u>
-Phone⇢ <u>{r["phone"]}</u>
-Currency⇢ <u>{r["currency"]}</u>
-Country⇢ <u>{r["country"]}({r["code"]})[{r["flag"]}]</u>
-SENDER: <a href="tg://user?id={ID}">{FIRST}</a>
-BOT⇢ @{BOT_USERNAME}
-OWNER⇢ <a href="tg://user?id={OWNER}">LINK</a>
-'''
-    await message.reply(INFO)
+
+    url = "https://www.deepbrid.com/backend-dl/index.php?page=api&action=generateLink"
+    head={'content-type':'application/x-www-form-urlencoded; charset=UTF-8'}
+    data = f"link= {username}&pass=&boxlinklist=0"
+    cookie= {'amember_ru':'rahulnova','amember_rp':'41b8739da7a1766af530a993a4a5c74d50bd1047','cookieconsent_status':'dismiss','crisp-client%2Fsession%2Fffca7959-dfd6-4915-90e2-b2feb57ae28e':'session_f5e79faa-8343-424c-a3cf-7241c05fd264','cf_clearance':'zsY5UafHGge9gvyNDPrjyaGI8oYnuOgf_.uUZ6CrXok-1655790566-0-150;adv1_closed=1','afscr8':'fIGyoi6Zo7pYdDF%2BivnhmPa7wwsNdWl5','PHPSESSID':'20bfbaf6632e67d47af4691b6dccdaf3'}
+    y = requests.post(url, data=data,  headers=head,cookies=cookie).json
+    if y["message"]=='OK':
+        olink=y["original_link"]
+        fname=y["filename"]
+        flink=y["link"]
+        fsize=y["size"]
+        await message.reply(f'✅>**Link Generated**\n'+
+                           f'**FileName** `{fname}`\n'+
+                           f'**FileSize**==> `{fsize}`\n'+
+                           f'**Original Link**==> {olink}\n'+
+                           f'**New Link**==> {flink}\n'+
+                           f'**Time-Stamp** ==> {datetime.now()}\n'+
+                           f'**Plugin-By** ~ @Stevenbin')
 
 
 @dp.message_handler(commands=['chk'], commands_prefix=PREFIX)
