@@ -1,5 +1,5 @@
-token: 'yourbot-token'
-blacklisted: '510805 434258 434256 601149 379248'
+token: '5642962857:AAEdHy_m9-uW5JI-J24fBubUu991bNrAOZI'
+blacklisted: '379248'
 prefix: '/!.'
-owner: 5388501342
+owner: 1226634960
 antispam: 10
