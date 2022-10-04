@@ -114,13 +114,21 @@ async def binio(message: types.Message):
     fname=y["filename"]
     flink=y["link"]
     fsize=y["size"]
-    await message.reply(f'✅>**Link Generated**\n'+
-                       f'**FileName** `{fname}`\n'+
-                       f'**FileSize**==> `{fsize}`\n'+
-                       f'**Original Link**==> {olink}\n'+
-                       f'**New Link**==> {flink}\n'+
-                       f'**Time-Stamp** ==> {datetime.now()}\n'+
-                       f'**Plugin-By** ~ @Stevenbin')
+    if y["message"]=='OK':
+        olink=y["original_link"]
+        fname=y["filename"]
+        flink=y["link"]
+        fsize=y["size"]
+        await message.reply(f'✅>**Link Generated**\n'+
+                           f'**FileName** `{fname}`\n'+
+                           f'**FileSize**==> `{fsize}`\n'+
+                           f'**Original Link**==> {olink}\n'+
+                           f'**New Link**==> {flink}\n'+
+                           f'**Time-Stamp** ==> {datetime.now()}\n'+
+                           f'**Plugin-By** ~ @Stevenbin')
+    else:
+        temp=y["message"]
+        await message.reply(f'{temp}')
 
 
 
