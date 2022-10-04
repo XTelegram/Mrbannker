@@ -124,7 +124,7 @@ async def binio(message: types.Message):
                            <b>FileName</b> <code>{fname}</code>\n'+
                            <b>FileSize</b>==> <code>{fsize}</code>\n'+
                            <b>Original Link</b>==> <code>{olink}</code>\n'+
-                           <b>New Link</b>==> flink}\n'+
+                           <b>New Link</b>==> {flink}\n'+
                            <b>Time-Stamp</b> ==> {datetime.now()}\n'+
                            <b>Plugin-By</b> ~ @Stevenbin''')
     else:
