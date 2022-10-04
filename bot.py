@@ -109,6 +109,8 @@ async def binio(message: types.Message):
     data = f"link= {BIN}&pass=&boxlinklist=0"
     cookie= {'amember_ru':'rahulnova','amember_rp':'41b8739da7a1766af530a993a4a5c74d50bd1047','cookieconsent_status':'dismiss','crisp-client%2Fsession%2Fffca7959-dfd6-4915-90e2-b2feb57ae28e':'session_f5e79faa-8343-424c-a3cf-7241c05fd264','cf_clearance':'zsY5UafHGge9gvyNDPrjyaGI8oYnuOgf_.uUZ6CrXok-1655790566-0-150;adv1_closed=1','afscr8':'fIGyoi6Zo7pYdDF%2BivnhmPa7wwsNdWl5','PHPSESSID':'20bfbaf6632e67d47af4691b6dccdaf3'}
     resp = requests.post(url, data=data,  headers=head,cookies=cookie)
+    if "Link dead" in resp.text:
+        await message.reply(resp)
     y=resp.json()
     olink=y["original_link"]
     fname=y["filename"]
@@ -126,10 +128,7 @@ async def binio(message: types.Message):
 <b>Original Link</b>==> <code>{olink}</code>
 <b>New Link</b>==> {flink}
 <b>Time-Stamp</b> ==> {datetime.now()}
-<b>Plugin-By</b> ~ @Stevenbin''')
-    else:
-        temp=f'''<code>Link Not Supported</code>'''
-        await message.reply(f'{temp}')
+<b>Bot-By</b> ~ @Stevenbin''')
 
 
 
