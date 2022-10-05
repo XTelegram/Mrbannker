@@ -89,14 +89,14 @@ async def binio(message: types.Message):
     await message.answer_chat_action('typing')
     ID = message.from_user.id
     FIRST = message.from_user.first_name
-    BIN = message.text[len('/bin '):]
+    BIN = message.text[len('/gen '):]
 
     url = "https://www.deepbrid.com/backend-dl/index.php?page=api&action=generateLink"
     head={'content-type':'application/x-www-form-urlencoded; charset=UTF-8'}
     data = f"link= {BIN}&pass=&boxlinklist=0"
     cookie= {'amember_ru':'rahulnova','amember_rp':'41b8739da7a1766af530a993a4a5c74d50bd1047','cookieconsent_status':'dismiss','crisp-client%2Fsession%2Fffca7959-dfd6-4915-90e2-b2feb57ae28e':'session_f5e79faa-8343-424c-a3cf-7241c05fd264','cf_clearance':'zsY5UafHGge9gvyNDPrjyaGI8oYnuOgf_.uUZ6CrXok-1655790566-0-150;adv1_closed=1','afscr8':'fIGyoi6Zo7pYdDF%2BivnhmPa7wwsNdWl5','PHPSESSID':'20bfbaf6632e67d47af4691b6dccdaf3'}
     resp = requests.post(url, data=data,  headers=head,cookies=cookie)
-    if "Link dead" in resp.text:
+    if "not supported" in resp.text:
         await message.reply(f'''Link Dead Try Another Link''')
     y=resp.json()
     olink=y["original_link"]
